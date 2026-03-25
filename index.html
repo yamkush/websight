@@ -143,6 +143,17 @@
             </div>
           </div>
           <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
+          <div style="text-align:center;color:#aaa;margin-top:16px;font-size:0.95rem;">Difference from GS (heatmap)</div>
+          <div class="pair" style="margin-top:8px;">
+            <div class="image-box">
+              <div class="label">|GS − SplitSum|</div>
+              <img src="${scene.basePath}diff_ss.png" alt="Diff SplitSum">
+            </div>
+            <div class="image-box">
+              <div class="label">|GS − Ours|</div>
+              <img src="${scene.basePath}diff_combo.png" alt="Diff Ours">
+            </div>
+          </div>
         </div>`;
       sectionDiv.insertAdjacentHTML('beforeend', html);
     });
