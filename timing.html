@@ -23,6 +23,13 @@
     background: #16213e;
     border-radius: 8px;
     padding: 20px;
+    margin-bottom: 40px;
+  }
+  .chart-container h2 {
+    text-align: center;
+    color: #7eb8da;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
   }
 </style>
 </head>
@@ -32,124 +39,117 @@
   <a href="index.html" style="color:#aaa;margin-right:20px;">Image Comparison</a>
   <a href="timing.html" style="color:#7eb8da;font-weight:bold;">Timing Chart</a>
 </nav>
-<h1>Mean Render Time (ms)</h1>
+<h1>Performance Benchmarks</h1>
 
-<div class="chart-container">
-  <h2 style="text-align:center;color:#7eb8da;margin-bottom:15px;">Averaged Across All Environments</h2>
-  <canvas id="chart"></canvas>
-</div>
-
-<div class="chart-container" style="margin-top:40px;">
-  <h2 style="text-align:center;color:#7eb8da;margin-bottom:15px;">Per Environment</h2>
-  <canvas id="perEnvChart"></canvas>
-</div>
+<div class="chart-container"><h2>Mean Render Time (ms) &mdash; Averaged</h2><canvas id="avgMs"></canvas></div>
+<div class="chart-container"><h2>Mean Render Time (ms) &mdash; Per Environment</h2><canvas id="perEnvMs"></canvas></div>
+<div class="chart-container"><h2>Mean FPS &mdash; Averaged</h2><canvas id="avgFps"></canvas></div>
+<div class="chart-container"><h2>Mean FPS &mdash; Per Environment</h2><canvas id="perEnvFps"></canvas></div>
 
 <script>
-// Mean ms values per [env][method] — 8 environments, 10 methods
-// Methods: fourier_L3, fourier_L4, fourier_L4_zxzxz, fourier_L5,
-//          combo_L3, combo_L4, combo_L4_zxzxz, combo_L5, splitsum, gs
-const meanMs = [
-  [1341581387179.148, 0.299846, 0.285207, 0.386979, 0.323980, 0.277876, 0.225257, 0.371665, 0.264332, 50.920353],
-  [2.406400, 0.264425, 0.240058, 0.381068, 0.236195, 0.284183, 0.224209, 0.378601, 0.195770, 51.230452],
-  [2.378799, 0.266636, 0.244503, 0.364474, 0.244038, 0.271337, 0.233937, 0.391494, 0.213830, 51.573411],
-  [2.374191, 0.289862, 0.214947, 0.388794, 0.268102, 0.271779, 0.247273, 0.372387, 0.200378, 53.577228],
-  [2.427485, 0.270057, 0.227537, 0.387235, 0.248017, 0.293190, 0.220369, 0.368454, 0.212713, 49.629779],
-  [2.423482, 0.273408, 0.220742, 0.390796, 0.239290, 0.270313, 0.225373, 0.409740, 0.233332, 48.455729],
-  [2.410100, 0.266682, 0.216204, 0.387654, 0.258839, 0.271407, 0.222767, 0.372117, 0.210246, 53.121191],
-  [2.412009, 0.288349, 0.226700, 0.363590, 0.237498, 0.281088, 0.224745, 0.390167, 0.198260, 54.764325],
-];
-
-const methods = [
-  'fourier_L3', 'fourier_L4', 'fourier_L4_zxzxz', 'fourier_L5',
-  'combo_L3', 'combo_L4', 'combo_L4_zxzxz', 'combo_L5',
-  'splitsum', 'gs'
-];
-
-// Average across environments, skipping abandoned_bakery (index 0) for fourier_L3 (outlier)
-const avg = methods.map((_, m) => {
-  let sum = 0, count = 0;
-  for (let e = 0; e < meanMs.length; e++) {
-    if (m === 0 && e === 0) continue; // skip outlier
-    sum += meanMs[e][m];
-    count++;
-  }
-  return sum / count;
-});
-
-const colors = methods.map(m => {
-  if (m.startsWith('fourier')) return '#3498db';
-  if (m.startsWith('combo'))   return '#e67e22';
-  if (m === 'splitsum')        return '#9b59b6';
-  return '#95a5a6';
-});
-
-new Chart(document.getElementById('chart'), {
-  type: 'bar',
-  data: {
-    labels: methods,
-    datasets: [{
-      data: avg,
-      backgroundColor: colors,
-      borderColor: colors,
-      borderWidth: 1,
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(3) + ' ms' } }
-    },
-    scales: {
-      x: { ticks: { color: '#ccc', font: { size: 11 } }, grid: { color: '#333' } },
-      y: {
-        type: 'logarithmic',
-        title: { display: true, text: 'Time (ms)', color: '#aaa' },
-        ticks: { color: '#aaa' },
-        grid: { color: '#333' }
-      }
-    }
-  }
-});
-
-// --- Per-environment grouped bar chart ---
 const environments = [
   'abandoned_bakery', 'belfast_sunset', 'blue_photo_studio',
   'little_paris', 'peppermint_powerplant', 'pretville_street',
   'solitude_night', 'spruit_sunrise'
 ];
 
-const perEnvDatasets = methods.map((method, m) => ({
-  label: method,
-  data: environments.map((_, e) => {
-    const v = meanMs[e][m];
-    return v > 1000 ? null : v; // skip outlier
-  }),
-  backgroundColor: colors[m],
-  borderColor: colors[m],
-  borderWidth: 1,
-}));
+const methods = [
+  'fourier_L4', 'fourier_L4_zxzxz', 'fourier_L5',
+  'combo_L3', 'combo_L4', 'combo_L4_zxzxz', 'combo_L5',
+  'splitsum', 'gs'
+];
 
-new Chart(document.getElementById('perEnvChart'), {
-  type: 'bar',
-  data: { labels: environments, datasets: perEnvDatasets },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { labels: { color: '#ccc', font: { size: 11 } } },
-      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.raw !== null ? ctx.raw.toFixed(3) + ' ms' : 'outlier') } }
+// Mean ms per [env][method] — fourier_L3 removed
+const meanMs = [
+  [0.299846, 0.285207, 0.386979, 0.323980, 0.277876, 0.225257, 0.371665, 0.264332, 50.920353],
+  [0.264425, 0.240058, 0.381068, 0.236195, 0.284183, 0.224209, 0.378601, 0.195770, 51.230452],
+  [0.266636, 0.244503, 0.364474, 0.244038, 0.271337, 0.233937, 0.391494, 0.213830, 51.573411],
+  [0.289862, 0.214947, 0.388794, 0.268102, 0.271779, 0.247273, 0.372387, 0.200378, 53.577228],
+  [0.270057, 0.227537, 0.387235, 0.248017, 0.293190, 0.220369, 0.368454, 0.212713, 49.629779],
+  [0.273408, 0.220742, 0.390796, 0.239290, 0.270313, 0.225373, 0.409740, 0.233332, 48.455729],
+  [0.266682, 0.216204, 0.387654, 0.258839, 0.271407, 0.222767, 0.372117, 0.210246, 53.121191],
+  [0.288349, 0.226700, 0.363590, 0.237498, 0.281088, 0.224745, 0.390167, 0.198260, 54.764325],
+];
+
+// Mean FPS per [env][method]
+const meanFps = [
+  [946.896332, 808.368822, 917.316432, 941.462434, 1975.149034, 1987.066007, 1999.900005, 828.012413, 18.965628],
+  [1981.214484, 2502.701780, 2247.879841, 2462.475235, 2257.255280, 2198.010800, 2267.690563, 2294.606631, 19.762385],
+  [2347.693391, 2169.796434, 2262.280584, 2186.911336, 2137.686440, 2155.014081, 2099.557184, 1965.821512, 19.337230],
+  [2402.402402, 2471.382514, 2153.727172, 2296.031518, 2343.242408, 2323.162458, 2257.475322, 2356.431720, 17.538991],
+  [2590.627815, 2564.640601, 2182.377303, 2243.192675, 2405.291642, 2381.609643, 2155.299097, 2287.461074, 18.990106],
+  [2423.841789, 2670.453856, 2194.086936, 2598.016060, 2444.634583, 1940.925292, 2120.512586, 2578.422123, 19.439949],
+  [2421.054369, 2593.040045, 2235.352093, 2208.347554, 2354.326074, 2448.048516, 2232.210802, 2260.908885, 17.672659],
+  [1837.751594, 2399.611699, 2298.850575, 2183.113616, 2167.039332, 2122.343453, 2086.375965, 2191.911845, 18.515835],
+];
+
+const colorMap = m => {
+  if (m.startsWith('fourier')) return '#3498db';
+  if (m.startsWith('combo'))   return '#e67e22';
+  if (m === 'splitsum')        return '#9b59b6';
+  return '#95a5a6';
+};
+const colors = methods.map(colorMap);
+
+function avgAcrossEnvs(data) {
+  return methods.map((_, m) => {
+    let sum = 0;
+    for (let e = 0; e < data.length; e++) sum += data[e][m];
+    return sum / data.length;
+  });
+}
+
+function makeAvgChart(canvasId, data, unit, yType) {
+  const avg = avgAcrossEnvs(data);
+  new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: methods,
+      datasets: [{ data: avg, backgroundColor: colors, borderColor: colors, borderWidth: 1 }]
     },
-    scales: {
-      x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: '#333' } },
-      y: {
-        type: 'logarithmic',
-        title: { display: true, text: 'Time (ms)', color: '#aaa' },
-        ticks: { color: '#aaa' },
-        grid: { color: '#333' }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(3) + ' ' + unit } }
+      },
+      scales: {
+        x: { ticks: { color: '#ccc', font: { size: 11 } }, grid: { color: '#333' } },
+        y: { type: yType, title: { display: true, text: unit, color: '#aaa' }, ticks: { color: '#aaa' }, grid: { color: '#333' } }
       }
     }
-  }
-});
+  });
+}
+
+function makePerEnvChart(canvasId, data, unit, yType) {
+  const datasets = methods.map((method, m) => ({
+    label: method,
+    data: environments.map((_, e) => data[e][m]),
+    backgroundColor: colors[m],
+    borderColor: colors[m],
+    borderWidth: 1,
+  }));
+  new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: { labels: environments, datasets },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#ccc', font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.toFixed(3) + ' ' + unit } }
+      },
+      scales: {
+        x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: '#333' } },
+        y: { type: yType, title: { display: true, text: unit, color: '#aaa' }, ticks: { color: '#aaa' }, grid: { color: '#333' } }
+      }
+    }
+  });
+}
+
+makeAvgChart('avgMs', meanMs, 'ms', 'logarithmic');
+makePerEnvChart('perEnvMs', meanMs, 'ms', 'logarithmic');
+makeAvgChart('avgFps', meanFps, 'FPS', 'logarithmic');
+makePerEnvChart('perEnvFps', meanFps, 'FPS', 'logarithmic');
 </script>
 
 </body>
