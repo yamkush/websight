@@ -45,11 +45,15 @@
   }
   .pair {
     display: flex;
-    gap: 30px;
+    gap: 10px;
     justify-content: center;
+    padding: 0 10px;
   }
   .image-box {
     text-align: center;
+    flex: 1;
+    min-width: 0;
+    max-width: 350px;
   }
   .image-box .label {
     font-size: 1.1rem;
@@ -59,7 +63,7 @@
   }
   .image-box img {
     display: block;
-    width: 350px;
+    width: 100%;
     height: auto;
     border: 2px solid #333;
     border-radius: 4px;
