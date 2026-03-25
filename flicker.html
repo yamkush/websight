@@ -37,10 +37,21 @@
     margin-bottom: 16px;
     color: #aaa;
   }
+  .flicker-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .side-label {
+    font-size: 1rem;
+    color: #aaa;
+    min-width: 80px;
+    text-align: right;
+  }
   .flicker-box {
     text-align: center;
     max-width: 450px;
-    margin: 0 auto;
   }
   .flicker-box .label {
     font-size: 1.1rem;
@@ -88,12 +99,12 @@
     { id: 'lr-default', section: 'Low Roughness',  scene: 'Default', basePath: 'images/Low_Roughness/Default/' },
   ];
 
-  // 4 frames: GS -> SplitSum -> GS -> Ours
+  // 4 frames: GS(SplitSum) -> SplitSum(SplitSum) -> GS(Ours) -> Ours(Ours)
   const frames = [
-    { label: 'GS',       img: 'gs.png' },
-    { label: 'SplitSum', img: 'ss.png' },
-    { label: 'GS',       img: 'gs.png' },
-    { label: 'Ours',     img: 'combo.png' },
+    { label: 'GS',       sideLabel: 'SplitSum', img: 'gs.png' },
+    { label: 'SplitSum', sideLabel: 'SplitSum', img: 'ss.png' },
+    { label: 'GS',       sideLabel: 'Ours',     img: 'gs.png' },
+    { label: 'Ours',     sideLabel: 'Ours',     img: 'combo.png' },
   ];
 
   const FRAME_DURATION = 1500;
@@ -115,10 +126,13 @@
       const html = `
         <div class="comparison">
           <div class="scene-title">${scene.scene}</div>
-          <div class="flicker-box">
-            <div class="label" id="${scene.id}-label">GS</div>
-            <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
-            <div class="frame-indicator" id="${scene.id}-ind">Frame 1 / 4</div>
+          <div class="flicker-wrapper">
+            <div class="side-label" id="${scene.id}-side">SplitSum</div>
+            <div class="flicker-box">
+              <div class="label" id="${scene.id}-label">GS</div>
+              <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
+              <div class="frame-indicator" id="${scene.id}-ind">Frame 1 / 4</div>
+            </div>
           </div>
         </div>`;
       sectionDiv.insertAdjacentHTML('beforeend', html);
@@ -130,12 +144,14 @@
   scenes.forEach(scene => {
     let frame = 0;
     const label = document.getElementById(scene.id + '-label');
+    const side  = document.getElementById(scene.id + '-side');
     const img   = document.getElementById(scene.id + '-img');
     const ind   = document.getElementById(scene.id + '-ind');
 
     function tick() {
       const f = frames[frame];
       label.textContent = f.label;
+      side.textContent  = f.sideLabel;
       img.src = scene.basePath + f.img;
       ind.textContent = 'Frame ' + (frame + 1) + ' / ' + frames.length;
       frame = (frame + 1) % frames.length;
