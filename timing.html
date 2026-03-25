@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rendering Time Comparison</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 { margin-bottom: 30px; color: #fff; }
+  .chart-container {
+    width: 100%;
+    max-width: 900px;
+    background: #16213e;
+    border-radius: 8px;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<nav style="margin-bottom:20px;font-size:1rem;">
+  <a href="index.html" style="color:#aaa;margin-right:20px;">Image Comparison</a>
+  <a href="timing.html" style="color:#7eb8da;font-weight:bold;">Timing Chart</a>
+</nav>
+<h1>Mean Render Time (ms)</h1>
+
+<div class="chart-container">
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+// Mean ms values per [env][method] — 8 environments, 10 methods
+// Methods: fourier_L3, fourier_L4, fourier_L4_zxzxz, fourier_L5,
+//          combo_L3, combo_L4, combo_L4_zxzxz, combo_L5, splitsum, gs
+const meanMs = [
+  [1341581387179.148, 0.299846, 0.285207, 0.386979, 0.323980, 0.277876, 0.225257, 0.371665, 0.264332, 50.920353],
+  [2.406400, 0.264425, 0.240058, 0.381068, 0.236195, 0.284183, 0.224209, 0.378601, 0.195770, 51.230452],
+  [2.378799, 0.266636, 0.244503, 0.364474, 0.244038, 0.271337, 0.233937, 0.391494, 0.213830, 51.573411],
+  [2.374191, 0.289862, 0.214947, 0.388794, 0.268102, 0.271779, 0.247273, 0.372387, 0.200378, 53.577228],
+  [2.427485, 0.270057, 0.227537, 0.387235, 0.248017, 0.293190, 0.220369, 0.368454, 0.212713, 49.629779],
+  [2.423482, 0.273408, 0.220742, 0.390796, 0.239290, 0.270313, 0.225373, 0.409740, 0.233332, 48.455729],
+  [2.410100, 0.266682, 0.216204, 0.387654, 0.258839, 0.271407, 0.222767, 0.372117, 0.210246, 53.121191],
+  [2.412009, 0.288349, 0.226700, 0.363590, 0.237498, 0.281088, 0.224745, 0.390167, 0.198260, 54.764325],
+];
+
+const methods = [
+  'fourier_L3', 'fourier_L4', 'fourier_L4_zxzxz', 'fourier_L5',
+  'combo_L3', 'combo_L4', 'combo_L4_zxzxz', 'combo_L5',
+  'splitsum', 'gs'
+];
+
+// Average across environments, skipping abandoned_bakery (index 0) for fourier_L3 (outlier)
+const avg = methods.map((_, m) => {
+  let sum = 0, count = 0;
+  for (let e = 0; e < meanMs.length; e++) {
+    if (m === 0 && e === 0) continue; // skip outlier
+    sum += meanMs[e][m];
+    count++;
+  }
+  return sum / count;
+});
+
+const colors = methods.map(m => {
+  if (m.startsWith('fourier')) return '#3498db';
+  if (m.startsWith('combo'))   return '#e67e22';
+  if (m === 'splitsum')        return '#9b59b6';
+  return '#95a5a6';
+});
+
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: {
+    labels: methods,
+    datasets: [{
+      data: avg,
+      backgroundColor: colors,
+      borderColor: colors,
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(3) + ' ms' } }
+    },
+    scales: {
+      x: { ticks: { color: '#ccc', font: { size: 11 } }, grid: { color: '#333' } },
+      y: {
+        type: 'logarithmic',
+        title: { display: true, text: 'Time (ms)', color: '#aaa' },
+        ticks: { color: '#aaa' },
+        grid: { color: '#333' }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
