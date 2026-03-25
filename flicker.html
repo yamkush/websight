@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SH-GS Comparison</title>
+<title>SH-GS Flicker Comparison</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -16,11 +16,7 @@
     min-height: 100vh;
     padding: 40px 20px;
   }
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #fff;
-  }
+  h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
   .roughness-section {
     width: 100%;
     max-width: 900px;
@@ -34,43 +30,39 @@
     border-bottom: 1px solid #333;
     padding-bottom: 10px;
   }
-  .comparison {
-    margin-bottom: 40px;
-  }
+  .comparison { margin-bottom: 40px; }
   .scene-title {
     font-size: 1.2rem;
     text-align: center;
     margin-bottom: 16px;
     color: #aaa;
   }
-  .pair {
+  .flicker-row {
     display: flex;
-    gap: 10px;
+    gap: 30px;
     justify-content: center;
     padding: 0 10px;
   }
-  .image-box {
+  .flicker-box {
     text-align: center;
-    flex: 1;
-    min-width: 0;
-    max-width: 350px;
+    max-width: 400px;
   }
-  .image-box .label {
+  .flicker-box .label {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 8px;
     height: 1.4em;
   }
-  .image-box img {
+  .flicker-box img {
     display: block;
     width: 100%;
     height: auto;
     border: 2px solid #333;
     border-radius: 4px;
   }
-  .frame-indicator {
+  .flicker-box .frame-indicator {
     text-align: center;
-    margin-top: 12px;
+    margin-top: 8px;
     font-size: 0.85rem;
     color: #666;
   }
@@ -78,25 +70,23 @@
   @media (max-width: 600px) {
     h1 { font-size: 1.4rem; }
     .roughness-title { font-size: 1.2rem; }
-    .pair {
+    .flicker-row {
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 30px;
     }
-    .image-box {
-      max-width: 90vw;
-    }
+    .flicker-box { max-width: 90vw; }
   }
 </style>
 </head>
 <body>
 
 <nav style="margin-bottom:20px;font-size:1rem;">
-  <a href="index.html" style="color:#7eb8da;margin-right:20px;font-weight:bold;">Image Comparison</a>
-  <a href="flicker.html" style="color:#aaa;margin-right:20px;">Flicker Test</a>
+  <a href="index.html" style="color:#aaa;margin-right:20px;">Image Comparison</a>
+  <a href="flicker.html" style="color:#7eb8da;margin-right:20px;font-weight:bold;">Flicker Test</a>
   <a href="timing.html" style="color:#aaa;">Timing Chart</a>
 </nav>
-<h1>SH-GS: Rendering Comparison</h1>
+<h1>SH-GS: Flicker Test</h1>
 
 <div id="container"></div>
 
@@ -108,22 +98,31 @@
     { id: 'lr-default', section: 'Low Roughness',  scene: 'Default', basePath: 'images/Low_Roughness/Default/' },
   ];
 
-  const frames = [
-    { leftLabel: 'GS',       rightLabel: 'GS',   leftImg: 'gs.png', rightImg: 'gs.png' },
-    { leftLabel: 'SplitSum', rightLabel: 'Ours',  leftImg: 'ss.png', rightImg: 'combo.png' },
+  // 4 frames: GS -> SplitSum -> GS -> Ours
+  const ssFrames = [
+    { label: 'GS',       img: 'gs.png' },
+    { label: 'SplitSum', img: 'ss.png' },
+    { label: 'GS',       img: 'gs.png' },
+    { label: 'SplitSum', img: 'ss.png' },
+  ];
+
+  const oursFrames = [
+    { label: 'GS',   img: 'gs.png' },
+    { label: 'Ours', img: 'combo.png' },
+    { label: 'GS',   img: 'gs.png' },
+    { label: 'Ours', img: 'combo.png' },
   ];
 
   const FRAME_DURATION = 1500;
   const container = document.getElementById('container');
 
-  // Group scenes by section
+  // Group by section
   const sections = {};
   scenes.forEach(s => {
     if (!sections[s.section]) sections[s.section] = [];
     sections[s.section].push(s);
   });
 
-  // Build DOM
   Object.entries(sections).forEach(([sectionName, sceneList]) => {
     const sectionDiv = document.createElement('div');
     sectionDiv.className = 'roughness-section';
@@ -133,26 +132,16 @@
       const html = `
         <div class="comparison">
           <div class="scene-title">${scene.scene}</div>
-          <div class="pair">
-            <div class="image-box">
-              <div class="label" id="${scene.id}-label-left">GS</div>
-              <img id="${scene.id}-img-left" src="${scene.basePath}gs.png" alt="Left">
+          <div class="flicker-row">
+            <div class="flicker-box">
+              <div class="label" id="${scene.id}-ss-label">GS</div>
+              <img id="${scene.id}-ss-img" src="${scene.basePath}gs.png" alt="SplitSum flicker">
+              <div class="frame-indicator" id="${scene.id}-ss-ind">Frame 1 / 4</div>
             </div>
-            <div class="image-box">
-              <div class="label" id="${scene.id}-label-right">GS</div>
-              <img id="${scene.id}-img-right" src="${scene.basePath}gs.png" alt="Right">
-            </div>
-          </div>
-          <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
-          <div style="text-align:center;color:#aaa;margin-top:16px;font-size:0.95rem;">Difference from GS (heatmap)</div>
-          <div class="pair" style="margin-top:8px;">
-            <div class="image-box">
-              <div class="label">|GS − SplitSum|</div>
-              <img src="${scene.basePath}diff_ss.png" alt="Diff SplitSum">
-            </div>
-            <div class="image-box">
-              <div class="label">|GS − Ours|</div>
-              <img src="${scene.basePath}diff_combo.png" alt="Diff Ours">
+            <div class="flicker-box">
+              <div class="label" id="${scene.id}-ours-label">GS</div>
+              <img id="${scene.id}-ours-img" src="${scene.basePath}gs.png" alt="Ours flicker">
+              <div class="frame-indicator" id="${scene.id}-ours-ind">Frame 1 / 4</div>
             </div>
           </div>
         </div>`;
@@ -162,23 +151,25 @@
     container.appendChild(sectionDiv);
   });
 
-  // Animate all scenes
   scenes.forEach(scene => {
     let frame = 0;
-    const labelLeft  = document.getElementById(scene.id + '-label-left');
-    const labelRight = document.getElementById(scene.id + '-label-right');
-    const imgLeft    = document.getElementById(scene.id + '-img-left');
-    const imgRight   = document.getElementById(scene.id + '-img-right');
-    const indicator  = document.getElementById(scene.id + '-indicator');
+    const ssLabel  = document.getElementById(scene.id + '-ss-label');
+    const ssImg    = document.getElementById(scene.id + '-ss-img');
+    const ssInd    = document.getElementById(scene.id + '-ss-ind');
+    const oursLabel = document.getElementById(scene.id + '-ours-label');
+    const oursImg   = document.getElementById(scene.id + '-ours-img');
+    const oursInd   = document.getElementById(scene.id + '-ours-ind');
 
     function tick() {
-      const f = frames[frame];
-      labelLeft.textContent  = f.leftLabel;
-      labelRight.textContent = f.rightLabel;
-      imgLeft.src  = scene.basePath + f.leftImg;
-      imgRight.src = scene.basePath + f.rightImg;
-      indicator.textContent = 'Frame ' + (frame + 1) + ' / ' + frames.length;
-      frame = (frame + 1) % frames.length;
+      const sf = ssFrames[frame];
+      const of = oursFrames[frame];
+      ssLabel.textContent   = sf.label;
+      ssImg.src             = scene.basePath + sf.img;
+      ssInd.textContent     = 'Frame ' + (frame + 1) + ' / ' + ssFrames.length;
+      oursLabel.textContent = of.label;
+      oursImg.src           = scene.basePath + of.img;
+      oursInd.textContent   = 'Frame ' + (frame + 1) + ' / ' + oursFrames.length;
+      frame = (frame + 1) % ssFrames.length;
     }
 
     tick();
