@@ -37,15 +37,10 @@
     margin-bottom: 16px;
     color: #aaa;
   }
-  .flicker-row {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-    padding: 0 10px;
-  }
   .flicker-box {
     text-align: center;
-    max-width: 400px;
+    max-width: 450px;
+    margin: 0 auto;
   }
   .flicker-box .label {
     font-size: 1.1rem;
@@ -60,7 +55,7 @@
     border: 2px solid #333;
     border-radius: 4px;
   }
-  .flicker-box .frame-indicator {
+  .frame-indicator {
     text-align: center;
     margin-top: 8px;
     font-size: 0.85rem;
@@ -70,11 +65,6 @@
   @media (max-width: 600px) {
     h1 { font-size: 1.4rem; }
     .roughness-title { font-size: 1.2rem; }
-    .flicker-row {
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
     .flicker-box { max-width: 90vw; }
   }
 </style>
@@ -99,18 +89,11 @@
   ];
 
   // 4 frames: GS -> SplitSum -> GS -> Ours
-  const ssFrames = [
+  const frames = [
     { label: 'GS',       img: 'gs.png' },
     { label: 'SplitSum', img: 'ss.png' },
     { label: 'GS',       img: 'gs.png' },
-    { label: 'SplitSum', img: 'ss.png' },
-  ];
-
-  const oursFrames = [
-    { label: 'GS',   img: 'gs.png' },
-    { label: 'Ours', img: 'combo.png' },
-    { label: 'GS',   img: 'gs.png' },
-    { label: 'Ours', img: 'combo.png' },
+    { label: 'Ours',     img: 'combo.png' },
   ];
 
   const FRAME_DURATION = 1500;
@@ -132,17 +115,10 @@
       const html = `
         <div class="comparison">
           <div class="scene-title">${scene.scene}</div>
-          <div class="flicker-row">
-            <div class="flicker-box">
-              <div class="label" id="${scene.id}-ss-label">GS</div>
-              <img id="${scene.id}-ss-img" src="${scene.basePath}gs.png" alt="SplitSum flicker">
-              <div class="frame-indicator" id="${scene.id}-ss-ind">Frame 1 / 4</div>
-            </div>
-            <div class="flicker-box">
-              <div class="label" id="${scene.id}-ours-label">GS</div>
-              <img id="${scene.id}-ours-img" src="${scene.basePath}gs.png" alt="Ours flicker">
-              <div class="frame-indicator" id="${scene.id}-ours-ind">Frame 1 / 4</div>
-            </div>
+          <div class="flicker-box">
+            <div class="label" id="${scene.id}-label">GS</div>
+            <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
+            <div class="frame-indicator" id="${scene.id}-ind">Frame 1 / 4</div>
           </div>
         </div>`;
       sectionDiv.insertAdjacentHTML('beforeend', html);
@@ -153,23 +129,16 @@
 
   scenes.forEach(scene => {
     let frame = 0;
-    const ssLabel  = document.getElementById(scene.id + '-ss-label');
-    const ssImg    = document.getElementById(scene.id + '-ss-img');
-    const ssInd    = document.getElementById(scene.id + '-ss-ind');
-    const oursLabel = document.getElementById(scene.id + '-ours-label');
-    const oursImg   = document.getElementById(scene.id + '-ours-img');
-    const oursInd   = document.getElementById(scene.id + '-ours-ind');
+    const label = document.getElementById(scene.id + '-label');
+    const img   = document.getElementById(scene.id + '-img');
+    const ind   = document.getElementById(scene.id + '-ind');
 
     function tick() {
-      const sf = ssFrames[frame];
-      const of = oursFrames[frame];
-      ssLabel.textContent   = sf.label;
-      ssImg.src             = scene.basePath + sf.img;
-      ssInd.textContent     = 'Frame ' + (frame + 1) + ' / ' + ssFrames.length;
-      oursLabel.textContent = of.label;
-      oursImg.src           = scene.basePath + of.img;
-      oursInd.textContent   = 'Frame ' + (frame + 1) + ' / ' + oursFrames.length;
-      frame = (frame + 1) % ssFrames.length;
+      const f = frames[frame];
+      label.textContent = f.label;
+      img.src = scene.basePath + f.img;
+      ind.textContent = 'Frame ' + (frame + 1) + ' / ' + frames.length;
+      frame = (frame + 1) % frames.length;
     }
 
     tick();
