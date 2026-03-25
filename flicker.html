@@ -99,15 +99,20 @@
     { id: 'lr-default', section: 'Low Roughness',  scene: 'Default', basePath: 'images/Low_Roughness/Default/' },
   ];
 
-  // 4 frames: GS(SplitSum) -> SplitSum(SplitSum) -> GS(Ours) -> Ours(Ours)
-  const frames = [
+  // Base frames
+  const baseFrames = [
     { label: 'GS',       sideLabel: 'SplitSum', img: 'gs.png' },
     { label: 'SplitSum', sideLabel: 'SplitSum', img: 'ss.png' },
     { label: 'GS',       sideLabel: 'Ours',     img: 'gs.png' },
     { label: 'Ours',     sideLabel: 'Ours',     img: 'combo.png' },
   ];
 
-  const FRAME_DURATION = 1500;
+  // Build sequence: 1,2 repeated 6 times then 3,4 repeated 6 times
+  const frames = [];
+  for (let i = 0; i < 6; i++) { frames.push(baseFrames[0]); frames.push(baseFrames[1]); }
+  for (let i = 0; i < 6; i++) { frames.push(baseFrames[2]); frames.push(baseFrames[3]); }
+
+  const FRAME_DURATION = 750;
   const container = document.getElementById('container');
 
   // Group by section
