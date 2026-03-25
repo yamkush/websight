@@ -35,7 +35,13 @@
 <h1>Mean Render Time (ms)</h1>
 
 <div class="chart-container">
+  <h2 style="text-align:center;color:#7eb8da;margin-bottom:15px;">Averaged Across All Environments</h2>
   <canvas id="chart"></canvas>
+</div>
+
+<div class="chart-container" style="margin-top:40px;">
+  <h2 style="text-align:center;color:#7eb8da;margin-bottom:15px;">Per Environment</h2>
+  <canvas id="perEnvChart"></canvas>
 </div>
 
 <script>
@@ -96,6 +102,45 @@ new Chart(document.getElementById('chart'), {
     },
     scales: {
       x: { ticks: { color: '#ccc', font: { size: 11 } }, grid: { color: '#333' } },
+      y: {
+        type: 'logarithmic',
+        title: { display: true, text: 'Time (ms)', color: '#aaa' },
+        ticks: { color: '#aaa' },
+        grid: { color: '#333' }
+      }
+    }
+  }
+});
+
+// --- Per-environment grouped bar chart ---
+const environments = [
+  'abandoned_bakery', 'belfast_sunset', 'blue_photo_studio',
+  'little_paris', 'peppermint_powerplant', 'pretville_street',
+  'solitude_night', 'spruit_sunrise'
+];
+
+const perEnvDatasets = methods.map((method, m) => ({
+  label: method,
+  data: environments.map((_, e) => {
+    const v = meanMs[e][m];
+    return v > 1000 ? null : v; // skip outlier
+  }),
+  backgroundColor: colors[m],
+  borderColor: colors[m],
+  borderWidth: 1,
+}));
+
+new Chart(document.getElementById('perEnvChart'), {
+  type: 'bar',
+  data: { labels: environments, datasets: perEnvDatasets },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#ccc', font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.raw !== null ? ctx.raw.toFixed(3) + ' ms' : 'outlier') } }
+    },
+    scales: {
+      x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: '#333' } },
       y: {
         type: 'logarithmic',
         title: { display: true, text: 'Time (ms)', color: '#aaa' },
