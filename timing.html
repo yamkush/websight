@@ -43,8 +43,6 @@
 
 <div class="chart-container"><h2>Mean Render Time (ms) &mdash; Averaged</h2><canvas id="avgMs"></canvas></div>
 <div class="chart-container"><h2>Mean Render Time (ms) &mdash; Per Environment</h2><canvas id="perEnvMs"></canvas></div>
-<div class="chart-container"><h2>Mean FPS &mdash; Averaged</h2><canvas id="avgFps"></canvas></div>
-<div class="chart-container"><h2>Mean FPS &mdash; Per Environment</h2><canvas id="perEnvFps"></canvas></div>
 
 <script>
 const environments = [
@@ -71,17 +69,6 @@ const meanMs = [
   [0.288349, 0.226700, 0.363590, 0.237498, 0.281088, 0.224745, 0.390167, 0.198260, 54.764325],
 ];
 
-// Mean FPS per [env][method]
-const meanFps = [
-  [946.896332, 808.368822, 917.316432, 941.462434, 1975.149034, 1987.066007, 1999.900005, 828.012413, 18.965628],
-  [1981.214484, 2502.701780, 2247.879841, 2462.475235, 2257.255280, 2198.010800, 2267.690563, 2294.606631, 19.762385],
-  [2347.693391, 2169.796434, 2262.280584, 2186.911336, 2137.686440, 2155.014081, 2099.557184, 1965.821512, 19.337230],
-  [2402.402402, 2471.382514, 2153.727172, 2296.031518, 2343.242408, 2323.162458, 2257.475322, 2356.431720, 17.538991],
-  [2590.627815, 2564.640601, 2182.377303, 2243.192675, 2405.291642, 2381.609643, 2155.299097, 2287.461074, 18.990106],
-  [2423.841789, 2670.453856, 2194.086936, 2598.016060, 2444.634583, 1940.925292, 2120.512586, 2578.422123, 19.439949],
-  [2421.054369, 2593.040045, 2235.352093, 2208.347554, 2354.326074, 2448.048516, 2232.210802, 2260.908885, 17.672659],
-  [1837.751594, 2399.611699, 2298.850575, 2183.113616, 2167.039332, 2122.343453, 2086.375965, 2191.911845, 18.515835],
-];
 
 const colorMap = m => {
   if (m.startsWith('fourier')) return '#3498db';
@@ -148,8 +135,6 @@ function makePerEnvChart(canvasId, data, unit, yType) {
 
 makeAvgChart('avgMs', meanMs, 'ms', 'logarithmic');
 makePerEnvChart('perEnvMs', meanMs, 'ms', 'logarithmic');
-makeAvgChart('avgFps', meanFps, 'FPS', 'logarithmic');
-makePerEnvChart('perEnvFps', meanFps, 'FPS', 'logarithmic');
 </script>
 
 </body>
