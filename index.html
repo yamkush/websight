@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SH-GS Comparison</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+  .roughness-section {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 50px;
+  }
+  .roughness-title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #7eb8da;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  .comparison {
+    margin-bottom: 40px;
+  }
+  .scene-title {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 16px;
+    color: #aaa;
+  }
+  .pair {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+  }
+  .image-box {
+    text-align: center;
+  }
+  .image-box .label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    height: 1.4em;
+  }
+  .image-box img {
+    display: block;
+    width: 350px;
+    height: auto;
+    border: 2px solid #333;
+    border-radius: 4px;
+  }
+  .frame-indicator {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+
+<h1>SH-GS: Rendering Comparison</h1>
+
+<div id="container"></div>
+
+<script>
+  const scenes = [
+    { id: 'lr-boma',    section: 'Low Roughness',  scene: 'Boma',    basePath: 'images/Low_Roughness/Boma/' },
+    { id: 'lr-default', section: 'Low Roughness',  scene: 'Default', basePath: 'images/Low_Roughness/Default/' },
+    { id: 'hr-boma',    section: 'High Roughness', scene: 'Boma',    basePath: 'images/High_Roughness/Boma/' },
+    { id: 'hr-default', section: 'High Roughness', scene: 'Default', basePath: 'images/High_Roughness/Default/' },
+  ];
+
+  const frames = [
+    { leftLabel: 'GS',       rightLabel: 'GS',   leftImg: 'gs.png', rightImg: 'gs.png' },
+    { leftLabel: 'SplitSum', rightLabel: 'Ours',  leftImg: 'ss.png', rightImg: 'combo.png' },
+  ];
+
+  const FRAME_DURATION = 1500;
+  const container = document.getElementById('container');
+
+  // Group scenes by section
+  const sections = {};
+  scenes.forEach(s => {
+    if (!sections[s.section]) sections[s.section] = [];
+    sections[s.section].push(s);
+  });
+
+  // Build DOM
+  Object.entries(sections).forEach(([sectionName, sceneList]) => {
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'roughness-section';
+    sectionDiv.innerHTML = '<div class="roughness-title">' + sectionName + '</div>';
+
+    sceneList.forEach(scene => {
+      const html = `
+        <div class="comparison">
+          <div class="scene-title">${scene.scene}</div>
+          <div class="pair">
+            <div class="image-box">
+              <div class="label" id="${scene.id}-label-left">GS</div>
+              <img id="${scene.id}-img-left" src="${scene.basePath}gs.png" alt="Left">
+            </div>
+            <div class="image-box">
+              <div class="label" id="${scene.id}-label-right">GS</div>
+              <img id="${scene.id}-img-right" src="${scene.basePath}gs.png" alt="Right">
+            </div>
+          </div>
+          <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
+        </div>`;
+      sectionDiv.insertAdjacentHTML('beforeend', html);
+    });
+
+    container.appendChild(sectionDiv);
+  });
+
+  // Animate all scenes
+  scenes.forEach(scene => {
+    let frame = 0;
+    const labelLeft  = document.getElementById(scene.id + '-label-left');
+    const labelRight = document.getElementById(scene.id + '-label-right');
+    const imgLeft    = document.getElementById(scene.id + '-img-left');
+    const imgRight   = document.getElementById(scene.id + '-img-right');
+    const indicator  = document.getElementById(scene.id + '-indicator');
+
+    function tick() {
+      const f = frames[frame];
+      labelLeft.textContent  = f.leftLabel;
+      labelRight.textContent = f.rightLabel;
+      imgLeft.src  = scene.basePath + f.leftImg;
+      imgRight.src = scene.basePath + f.rightImg;
+      indicator.textContent = 'Frame ' + (frame + 1) + ' / ' + frames.length;
+      frame = (frame + 1) % frames.length;
+    }
+
+    tick();
+    setInterval(tick, FRAME_DURATION);
+  });
+</script>
+
+</body>
+</html>
