@@ -39,7 +39,7 @@
   }
   .flicker-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 16px;
   }
@@ -48,10 +48,13 @@
     color: #aaa;
     min-width: 80px;
     text-align: right;
+    margin-top: 2em;
   }
   .flicker-box {
     text-align: center;
-    max-width: 450px;
+    flex: 1;
+    max-width: 350px;
+    min-width: 0;
   }
   .flicker-box .label {
     font-size: 1.1rem;
@@ -127,6 +130,10 @@
             <div class="label" id="${scene.id}-label">GS</div>
             <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
           </div>
+          <div class="flicker-box">
+            <div class="label" id="${scene.id}-diff-label">|GS − SplitSum|</div>
+            <img id="${scene.id}-diff-img" src="${scene.basePath}diff_ss.png" alt="Difference">
+          </div>
         </div>
       </div>`;
     container.insertAdjacentHTML('beforeend', html);
@@ -134,15 +141,19 @@
 
   scenes.forEach(scene => {
     let frame = 0;
-    const label = document.getElementById(scene.id + '-label');
-    const side  = document.getElementById(scene.id + '-side');
-    const img   = document.getElementById(scene.id + '-img');
+    const label    = document.getElementById(scene.id + '-label');
+    const side     = document.getElementById(scene.id + '-side');
+    const img      = document.getElementById(scene.id + '-img');
+    const diffLabel = document.getElementById(scene.id + '-diff-label');
+    const diffImg   = document.getElementById(scene.id + '-diff-img');
 
     function tick() {
       const f = frames[frame];
-      label.textContent = f.label;
-      side.textContent  = f.sideLabel;
-      img.src = scene.basePath + f.img;
+      label.textContent     = f.label;
+      side.textContent      = f.sideLabel;
+      img.src               = scene.basePath + f.img;
+      diffLabel.textContent = f.diffLabel;
+      diffImg.src           = scene.basePath + f.diffImg;
       frame = (frame + 1) % frames.length;
     }
 
