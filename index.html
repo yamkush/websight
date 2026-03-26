@@ -102,14 +102,12 @@
 
 <script>
   const scenes = [
-    { id: 'hr-boma',        section: 'High Roughness', scene: 'Boma',        basePath: 'images/High_Roughness/Boma/' },
-    { id: 'hr-default',     section: 'High Roughness', scene: 'Default',     basePath: 'images/High_Roughness/Default/' },
-    { id: 'lr-bathroom',    section: 'Low Roughness',  scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
-    { id: 'lr-boma',        section: 'Low Roughness',  scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
-    { id: 'lr-default',     section: 'Low Roughness',  scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
-    { id: 'lr-kitchen',     section: 'Low Roughness',  scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
-    { id: 'lr-library',     section: 'Low Roughness',  scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
-    { id: 'lr-livingroom',  section: 'Low Roughness',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
+    { id: 'lr-bathroom',    scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
+    { id: 'lr-boma',        scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
+    { id: 'lr-default',     scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
+    { id: 'lr-kitchen',     scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
+    { id: 'lr-library',     scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
+    { id: 'lr-livingroom',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
   ];
 
   const frames = [
@@ -120,50 +118,34 @@
   const FRAME_DURATION = 1500;
   const container = document.getElementById('container');
 
-  // Group scenes by section
-  const sections = {};
-  scenes.forEach(s => {
-    if (!sections[s.section]) sections[s.section] = [];
-    sections[s.section].push(s);
-  });
-
-  // Build DOM
-  Object.entries(sections).forEach(([sectionName, sceneList]) => {
-    const sectionDiv = document.createElement('div');
-    sectionDiv.className = 'roughness-section';
-    sectionDiv.innerHTML = '<div class="roughness-title">' + sectionName + '</div>';
-
-    sceneList.forEach(scene => {
-      const html = `
-        <div class="comparison">
-          <div class="scene-title">${scene.scene}</div>
-          <div class="pair">
-            <div class="image-box">
-              <div class="label" id="${scene.id}-label-left">GS</div>
-              <img id="${scene.id}-img-left" src="${scene.basePath}gs.png" alt="Left">
-            </div>
-            <div class="image-box">
-              <div class="label" id="${scene.id}-label-right">GS</div>
-              <img id="${scene.id}-img-right" src="${scene.basePath}gs.png" alt="Right">
-            </div>
+  scenes.forEach(scene => {
+    const html = `
+      <div class="comparison">
+        <div class="scene-title">${scene.scene}</div>
+        <div class="pair">
+          <div class="image-box">
+            <div class="label" id="${scene.id}-label-left">GS</div>
+            <img id="${scene.id}-img-left" src="${scene.basePath}gs.png" alt="Left">
           </div>
-          <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
-          <div style="text-align:center;color:#aaa;margin-top:16px;font-size:0.95rem;">Difference from GS (heatmap)</div>
-          <div class="pair" style="margin-top:8px;">
-            <div class="image-box">
-              <div class="label">|GS − SplitSum|</div>
-              <img src="${scene.basePath}diff_ss.png" alt="Diff SplitSum">
-            </div>
-            <div class="image-box">
-              <div class="label">|GS − Ours|</div>
-              <img src="${scene.basePath}diff_combo.png" alt="Diff Ours">
-            </div>
+          <div class="image-box">
+            <div class="label" id="${scene.id}-label-right">GS</div>
+            <img id="${scene.id}-img-right" src="${scene.basePath}gs.png" alt="Right">
           </div>
-        </div>`;
-      sectionDiv.insertAdjacentHTML('beforeend', html);
-    });
-
-    container.appendChild(sectionDiv);
+        </div>
+        <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
+        <div style="text-align:center;color:#aaa;margin-top:16px;font-size:0.95rem;">Difference from GS (heatmap)</div>
+        <div class="pair" style="margin-top:8px;">
+          <div class="image-box">
+            <div class="label">|GS − SplitSum|</div>
+            <img src="${scene.basePath}diff_ss.png" alt="Diff SplitSum">
+          </div>
+          <div class="image-box">
+            <div class="label">|GS − Ours|</div>
+            <img src="${scene.basePath}diff_combo.png" alt="Diff Ours">
+          </div>
+        </div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
   });
 
   // Animate all scenes

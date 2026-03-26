@@ -93,22 +93,20 @@
 
 <script>
   const scenes = [
-    { id: 'hr-boma',        section: 'High Roughness', scene: 'Boma',        basePath: 'images/High_Roughness/Boma/' },
-    { id: 'hr-default',     section: 'High Roughness', scene: 'Default',     basePath: 'images/High_Roughness/Default/' },
-    { id: 'lr-bathroom',    section: 'Low Roughness',  scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
-    { id: 'lr-boma',        section: 'Low Roughness',  scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
-    { id: 'lr-default',     section: 'Low Roughness',  scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
-    { id: 'lr-kitchen',     section: 'Low Roughness',  scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
-    { id: 'lr-library',     section: 'Low Roughness',  scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
-    { id: 'lr-livingroom',  section: 'Low Roughness',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
+    { id: 'lr-bathroom',    scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
+    { id: 'lr-boma',        scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
+    { id: 'lr-default',     scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
+    { id: 'lr-kitchen',     scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
+    { id: 'lr-library',     scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
+    { id: 'lr-livingroom',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
   ];
 
   // Base frames
   const baseFrames = [
-    { label: 'GS',       sideLabel: 'SplitSum', img: 'gs.png' },
-    { label: 'SplitSum', sideLabel: 'SplitSum', img: 'ss.png' },
-    { label: 'GS',       sideLabel: 'Ours',     img: 'gs.png' },
-    { label: 'Ours',     sideLabel: 'Ours',     img: 'combo.png' },
+    { label: 'GS',       sideLabel: 'SplitSum', img: 'gs.png',    diffImg: 'diff_ss.png',    diffLabel: '|GS − SplitSum|' },
+    { label: 'SplitSum', sideLabel: 'SplitSum', img: 'ss.png',    diffImg: 'diff_ss.png',    diffLabel: '|GS − SplitSum|' },
+    { label: 'GS',       sideLabel: 'Ours',     img: 'gs.png',    diffImg: 'diff_combo.png', diffLabel: '|GS − Ours|' },
+    { label: 'Ours',     sideLabel: 'Ours',     img: 'combo.png', diffImg: 'diff_combo.png', diffLabel: '|GS − Ours|' },
   ];
 
   // Build sequence: 1,2 repeated 6 times then 3,4 repeated 6 times
@@ -119,34 +117,19 @@
   const FRAME_DURATION = 750;
   const container = document.getElementById('container');
 
-  // Group by section
-  const sections = {};
-  scenes.forEach(s => {
-    if (!sections[s.section]) sections[s.section] = [];
-    sections[s.section].push(s);
-  });
-
-  Object.entries(sections).forEach(([sectionName, sceneList]) => {
-    const sectionDiv = document.createElement('div');
-    sectionDiv.className = 'roughness-section';
-    sectionDiv.innerHTML = '<div class="roughness-title">' + sectionName + '</div>';
-
-    sceneList.forEach(scene => {
-      const html = `
-        <div class="comparison">
-          <div class="scene-title">${scene.scene}</div>
-          <div class="flicker-wrapper">
-            <div class="side-label" id="${scene.id}-side">SplitSum</div>
-            <div class="flicker-box">
-              <div class="label" id="${scene.id}-label">GS</div>
-              <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
-              </div>
+  scenes.forEach(scene => {
+    const html = `
+      <div class="comparison">
+        <div class="scene-title">${scene.scene}</div>
+        <div class="flicker-wrapper">
+          <div class="side-label" id="${scene.id}-side">SplitSum</div>
+          <div class="flicker-box">
+            <div class="label" id="${scene.id}-label">GS</div>
+            <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
           </div>
-        </div>`;
-      sectionDiv.insertAdjacentHTML('beforeend', html);
-    });
-
-    container.appendChild(sectionDiv);
+        </div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
   });
 
   scenes.forEach(scene => {
