@@ -103,12 +103,12 @@
 <script>
   const scenes = [
     { id: 'lr-bathroom',    scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
-    { id: 'lr-boma',        scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
-    { id: 'lr-default',     scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
     { id: 'lr-kitchen',     scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
     { id: 'lr-library',     scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
     { id: 'lr-livingroom',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
   ];
+
+  const cacheBust = '?v=' + Date.now();
 
   const frames = [
     { leftLabel: 'GS',       rightLabel: 'GS',   leftImg: 'gs.png', rightImg: 'gs.png' },
@@ -125,11 +125,11 @@
         <div class="pair">
           <div class="image-box">
             <div class="label" id="${scene.id}-label-left">GS</div>
-            <img id="${scene.id}-img-left" src="${scene.basePath}gs.png" alt="Left">
+            <img id="${scene.id}-img-left" src="${scene.basePath}gs.png${cacheBust}" alt="Left">
           </div>
           <div class="image-box">
             <div class="label" id="${scene.id}-label-right">GS</div>
-            <img id="${scene.id}-img-right" src="${scene.basePath}gs.png" alt="Right">
+            <img id="${scene.id}-img-right" src="${scene.basePath}gs.png${cacheBust}" alt="Right">
           </div>
         </div>
         <div class="frame-indicator" id="${scene.id}-indicator">Frame 1 / 2</div>
@@ -137,11 +137,11 @@
         <div class="pair" style="margin-top:8px;">
           <div class="image-box">
             <div class="label">|GS − SplitSum|</div>
-            <img src="${scene.basePath}diff_ss.png" alt="Diff SplitSum">
+            <img src="${scene.basePath}diff_ss.png${cacheBust}" alt="Diff SplitSum">
           </div>
           <div class="image-box">
             <div class="label">|GS − Ours|</div>
-            <img src="${scene.basePath}diff_combo.png" alt="Diff Ours">
+            <img src="${scene.basePath}diff_combo.png${cacheBust}" alt="Diff Ours">
           </div>
         </div>
       </div>`;
@@ -161,8 +161,8 @@
       const f = frames[frame];
       labelLeft.textContent  = f.leftLabel;
       labelRight.textContent = f.rightLabel;
-      imgLeft.src  = scene.basePath + f.leftImg;
-      imgRight.src = scene.basePath + f.rightImg;
+      imgLeft.src  = scene.basePath + f.leftImg + cacheBust;
+      imgRight.src = scene.basePath + f.rightImg + cacheBust;
       indicator.textContent = 'Frame ' + (frame + 1) + ' / ' + frames.length;
       frame = (frame + 1) % frames.length;
     }

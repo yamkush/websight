@@ -97,12 +97,12 @@
 <script>
   const scenes = [
     { id: 'lr-bathroom',    scene: 'Bathroom',    basePath: 'images/Low_Roughness/Bathroom/' },
-    { id: 'lr-boma',        scene: 'Boma',        basePath: 'images/Low_Roughness/Boma/' },
-    { id: 'lr-default',     scene: 'Default',     basePath: 'images/Low_Roughness/Default/' },
     { id: 'lr-kitchen',     scene: 'Kitchen',     basePath: 'images/Low_Roughness/Kitchen/' },
     { id: 'lr-library',     scene: 'Library',     basePath: 'images/Low_Roughness/Library/' },
     { id: 'lr-livingroom',  scene: 'Living Room', basePath: 'images/Low_Roughness/Living Room/' },
   ];
+
+  const cacheBust = '?v=' + Date.now();
 
   // Base frames
   const baseFrames = [
@@ -128,11 +128,11 @@
           <div class="side-label" id="${scene.id}-side">SplitSum</div>
           <div class="flicker-box">
             <div class="label" id="${scene.id}-label">GS</div>
-            <img id="${scene.id}-img" src="${scene.basePath}gs.png" alt="Flicker">
+            <img id="${scene.id}-img" src="${scene.basePath}gs.png${cacheBust}" alt="Flicker">
           </div>
           <div class="flicker-box">
             <div class="label" id="${scene.id}-diff-label">|GS − SplitSum|</div>
-            <img id="${scene.id}-diff-img" src="${scene.basePath}diff_ss.png" alt="Difference">
+            <img id="${scene.id}-diff-img" src="${scene.basePath}diff_ss.png${cacheBust}" alt="Difference">
           </div>
         </div>
       </div>`;
@@ -151,9 +151,9 @@
       const f = frames[frame];
       label.textContent     = f.label;
       side.textContent      = f.sideLabel;
-      img.src               = scene.basePath + f.img;
+      img.src               = scene.basePath + f.img + cacheBust;
       diffLabel.textContent = f.diffLabel;
-      diffImg.src           = scene.basePath + f.diffImg;
+      diffImg.src           = scene.basePath + f.diffImg + cacheBust;
       frame = (frame + 1) % frames.length;
     }
 
