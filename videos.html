@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SH-GS Videos</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+  .video-section {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 50px;
+  }
+  .section-title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #7eb8da;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  .video-pair {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 10px;
+  }
+  .video-box {
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+  }
+  .video-box .label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #aaa;
+  }
+  .video-box video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 2px solid #333;
+    border-radius: 4px;
+    background: #000;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 1.4rem; }
+    .section-title { font-size: 1.2rem; }
+    .video-box {
+      max-width: 90vw;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav style="margin-bottom:20px;font-size:1rem;">
+  <a href="index.html" style="color:#aaa;margin-right:20px;">Image Comparison</a>
+  <a href="flicker.html" style="color:#aaa;margin-right:20px;">Flicker Test</a>
+  <a href="timing.html" style="color:#aaa;margin-right:20px;">Timing Chart</a>
+  <a href="videos.html" style="color:#7eb8da;font-weight:bold;">Videos</a>
+</nav>
+<h1>SH-GS: Scene Videos</h1>
+
+<div class="video-section">
+  <div class="section-title">Bedroom</div>
+  <div class="video-pair">
+    <div class="video-box">
+      <div class="label">Front</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Bedroom Shot.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-box">
+      <div class="label">Diagonal</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Bedroom Shot Diagonal.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<div class="video-section">
+  <div class="section-title">Sofa</div>
+  <div class="video-pair">
+    <div class="video-box">
+      <div class="label">Front</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Sofa Shot.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-box">
+      <div class="label">Diagonal</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Sofa Shot Diagonal.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<div class="video-section">
+  <div class="section-title">Table</div>
+  <div class="video-pair">
+    <div class="video-box">
+      <div class="label">Front</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Table Shot.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-box">
+      <div class="label">Diagonal</div>
+      <video controls loop muted playsinline>
+        <source src="videos/Table Shot Diagonal.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
